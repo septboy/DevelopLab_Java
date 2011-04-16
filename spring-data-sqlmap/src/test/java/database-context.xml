@@ -21,5 +21,9 @@
         <property name="configLocation" value="classpath:META-INF/ibatis/config.xml" />
         <property name="mappingLocations" value="classpath:META-INF/ibatis/Sqlmap*.xml" />
     </bean>
+    
+    <bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+        <property name="sqlMapClient" ref="sqlMapClient" />
+    </bean>
 
 </beans>

@@ -6,6 +6,7 @@ import kr.arawn.springframework.data.sqlmap.repository.statement.StatementInform
 
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.data.repository.support.RepositoryMetadata;
 import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.springframework.util.Assert;
 
@@ -43,8 +44,7 @@ public final class SqlmapQueryLookupStrategy {
             super(template, statement);
         }
 
-        public RepositoryQuery resolveQuery(Method method, Class<?> domainClass) {
-            // TODO Auto-generated method stub
+        public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata) {
             throw new UnsupportedOperationException();
         }        
 
@@ -56,9 +56,9 @@ public final class SqlmapQueryLookupStrategy {
             super(template, statement);
         }
 
-        public RepositoryQuery resolveQuery(Method method, Class<?> domainClass) {
+        public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata) {
             return new DefaultSqlmapRepositoryQuery(getTemplate(), 
-                    new DefaultSqlmapQueryMethod(method, getStatement().getStatementId(method.getName())));
+                    new DefaultSqlmapQueryMethod(method, metadata, getStatement().getStatementId(method.getName())));
         }
 
     }    
@@ -72,8 +72,8 @@ public final class SqlmapQueryLookupStrategy {
             this.declared = new DeclaredQueryLookupStrategy(template, statement); 
         }
 
-        public RepositoryQuery resolveQuery(Method method, Class<?> domainClass) {
-            return declared.resolveQuery(method, domainClass);
+        public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata) {
+            return declared.resolveQuery(method, metadata);
         }        
 
     }

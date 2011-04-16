@@ -29,28 +29,24 @@ public class SqlmapClientRepositoryFactory extends SqlmapRepositoryFactory {
     public SqlmapClientRepositoryFactory(SqlMapClientTemplate sqlMapClientTemplate) {
         this.sqlMapClientTemplate = sqlMapClientTemplate;
     }
-    
-    @Override
-    public void setQueryLookupStrategyKey(Key key) {
-        super.setQueryLookupStrategyKey(key);
-    }
-
-    @Override
-    protected QueryLookupStrategy getQueryLookupStrategy(Key key) {
-        return SqlmapQueryLookupStrategy.create(key, this.sqlMapClientTemplate, this.statement);
-    }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Object getTargetRepository(RepositoryMetadata metadata) {
-        generateStatementIdMap(metadata.getRepositoryInterface(), metadata.getDomainClass());
+        generateStatementInformation(metadata.getRepositoryInterface(), metadata.getDomainClass());
         
-        return new DefaultSqlmapClientRepository(this.sqlMapClientTemplate,
+        return new DefaultSqlmapClientRepository(
+                this.sqlMapClientTemplate,
                 (SqlmapEntityInformation) getEntityInformation(metadata.getDomainClass()),
                 this.statement);
     }
     
-    protected void generateStatementIdMap(Class<?> repositoryInterface, Class<?> domainClass) {
+    @Override
+    protected QueryLookupStrategy getQueryLookupStrategy(Key key) {
+        return SqlmapQueryLookupStrategy.create(key, this.sqlMapClientTemplate, this.statement);
+    }
+    
+    protected void generateStatementInformation(Class<?> repositoryInterface, Class<?> domainClass) {
         Map<String, String> map = new HashMap<String, String>();
         
         String rootNameSpace = null;
@@ -61,7 +57,10 @@ public class SqlmapClientRepositoryFactory extends SqlmapRepositoryFactory {
             rootNameSpace = Introspector.decapitalize(ClassUtils.getShortName(domainClass));
 
         for(StatementIdType id : StatementIdType.values()) {
-            map.put(id.name(), rootNameSpace + "." + id.name());    
+            if(rootNameSpace != null && rootNameSpace.length() > 0)
+                map.put(id.name(), rootNameSpace + "." + id.name());
+            else
+                map.put(id.name(), id.name());
         }
 
         for (Method method : repositoryInterface.getDeclaredMethods()) {
@@ -69,7 +68,10 @@ public class SqlmapClientRepositoryFactory extends SqlmapRepositoryFactory {
             if (statement != null)
                 map.put(method.getName(), statement.id());
             else if (!map.containsKey(method.getName()))
-                map.put(method.getName(), rootNameSpace + "." + method.getName());
+                if(rootNameSpace != null && rootNameSpace.length() > 0)
+                    map.put(method.getName(), rootNameSpace + "." + method.getName());
+                else
+                    map.put(method.getName(), method.getName());
         }
         
         this.statement = new StatementInformation(map);

@@ -8,6 +8,9 @@
         </layout>
     </appender>
 
+    <category name="kr.arawn.springframework.data.sqlmap">
+        <level value="DEBUG"/>
+    </category>
     <category name="org.springframework.data">
         <level value="DEBUG"/>
     </category>

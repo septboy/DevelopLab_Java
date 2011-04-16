@@ -18,10 +18,10 @@ public class StatementInformation {
 
     }
     
-    private Map<String, String> map;
+    private Map<String, String> statementMap;
     
     public StatementInformation(Map<String, String> statementMap) {
-        this.map = statementMap;
+        this.statementMap = statementMap;
     }
     
     public String insert() {
@@ -61,10 +61,10 @@ public class StatementInformation {
     }
     
     public String getStatementId(String methodName) {
-        if(!map.containsKey(methodName))
+        if(!statementMap.containsKey(methodName))
             throw new IllegalArgumentException(methodName + " 으로 정의된 statement-id 가 없습니다.");
         
-        return map.get(methodName);
+        return statementMap.get(methodName);
     }
 
 }

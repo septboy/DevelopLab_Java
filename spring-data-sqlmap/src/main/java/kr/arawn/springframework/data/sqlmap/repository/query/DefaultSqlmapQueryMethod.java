@@ -6,14 +6,15 @@ import kr.arawn.springframework.data.sqlmap.repository.statement.Statement;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.repository.query.QueryMethod;
+import org.springframework.data.repository.support.RepositoryMetadata;
 
 public class DefaultSqlmapQueryMethod extends QueryMethod {
     
     private final String statementId;
     private final boolean modifying;
     
-    public DefaultSqlmapQueryMethod(Method method, String statementId) {
-        super(method);
+    public DefaultSqlmapQueryMethod(Method method, RepositoryMetadata metadata, String statementId) {
+        super(method, metadata);
         
         this.statementId = statementId;
         

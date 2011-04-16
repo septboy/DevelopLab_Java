@@ -9,29 +9,25 @@ import org.springframework.data.repository.support.TransactionalRepositoryFactor
 import org.springframework.orm.ibatis.SqlMapClientTemplate;
 import org.springframework.util.Assert;
 
-import com.ibatis.sqlmap.client.SqlMapClient;
-
 
 public class SqlMapClientRepositoryFactoryBean<T extends SqlmapRepository<S, ID>, S, ID extends Serializable>
         extends TransactionalRepositoryFactoryBeanSupport<T, S, ID> {
     
-    private SqlMapClient sqlmapExecutor;
-    private SqlMapClientTemplate sqlMapClientTemplate;
+    private SqlMapClientTemplate sqlmapExecutor;
     
-    public void setSqlmapExecutor(SqlMapClient sqlmapExecutor) {
+    public void setSqlmapExecutor(SqlMapClientTemplate sqlmapExecutor) {
         this.sqlmapExecutor = sqlmapExecutor;
     }
     
     @Override
-    protected RepositoryFactorySupport doCreateRepositoryFactory() {
-        return new SqlmapClientRepositoryFactory(sqlMapClientTemplate);
+    public void afterPropertiesSet() {
+        Assert.notNull(sqlmapExecutor, "sqlMapClientTemplate must not be null!");
+        super.afterPropertiesSet();
     }
     
     @Override
-    public void afterPropertiesSet() {
-        Assert.notNull(sqlmapExecutor, "SqlMapClient[sqlmapExecutor] must not be null!");
-        sqlMapClientTemplate = new SqlMapClientTemplate(sqlmapExecutor);
-        super.afterPropertiesSet();
-    }    
+    protected RepositoryFactorySupport doCreateRepositoryFactory() {
+        return new SqlmapClientRepositoryFactory(sqlmapExecutor);
+    }
 
 }
